@@ -2,6 +2,6 @@ homepage: "https://www.henriksoderlund.com/"
 documentation: "https://github.com/henkisdabro/gtm-templates-fouanalytics"
 versions:
   # Latest version
-  - sha: 
-    changeNotes: 
+  - sha: 83cf629fc2a4fe8a2d7c46f083f5804dc748142b
+    changeNotes: Initial release.
   # Previous versions
