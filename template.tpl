@@ -225,6 +225,11 @@ scenarios:
       debug: true
     };
 
+    let logCallCount = 0;
+    mock('logToConsole', function(message) {
+      logCallCount++;
+    });
+
     mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
       onSuccess();
     });
@@ -234,8 +239,32 @@ scenarios:
     });
 
     runCode(mockData);
-    assertApi('logToConsole').wasCalled();
+    assertThat(logCallCount).isEqualTo(2);
     assertApi('gtmOnSuccess').wasCalled();
+
+- name: Debug mode logs messages on failure
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: true
+    };
+
+    let logCallCount = 0;
+    mock('logToConsole', function(message) {
+      logCallCount++;
+    });
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onFailure();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertThat(logCallCount).isEqualTo(2);
+    assertApi('gtmOnFailure').wasCalled();
 
 - name: Debug mode disabled does not log
   code: |-
