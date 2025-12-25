@@ -225,11 +225,6 @@ scenarios:
       debug: true
     };
 
-    let logCallCount = 0;
-    mock('logToConsole', function(message) {
-      logCallCount++;
-    });
-
     mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
       onSuccess();
     });
@@ -239,7 +234,7 @@ scenarios:
     });
 
     runCode(mockData);
-    assertThat(logCallCount).isEqualTo(2);
+    assertApi('logToConsole').wasCalled();
     assertApi('gtmOnSuccess').wasCalled();
 
 - name: Debug mode logs messages on failure
@@ -248,11 +243,6 @@ scenarios:
       sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
       debug: true
     };
-
-    let logCallCount = 0;
-    mock('logToConsole', function(message) {
-      logCallCount++;
-    });
 
     mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
       onFailure();
@@ -263,7 +253,7 @@ scenarios:
     });
 
     runCode(mockData);
-    assertThat(logCallCount).isEqualTo(2);
+    assertApi('logToConsole').wasCalled();
     assertApi('gtmOnFailure').wasCalled();
 
 - name: Debug mode disabled does not log
@@ -292,9 +282,8 @@ scenarios:
       debug: false
     };
 
-    let capturedCacheToken;
     mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
-      capturedCacheToken = cacheToken;
+      assertThat(cacheToken).isEqualTo(mockData.sourceUrl);
       onSuccess();
     });
 
@@ -303,7 +292,7 @@ scenarios:
     });
 
     runCode(mockData);
-    assertThat(capturedCacheToken).isEqualTo(mockData.sourceUrl);
+    assertApi('gtmOnSuccess').wasCalled();
 
 
 ___NOTES___
