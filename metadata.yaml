@@ -2,6 +2,12 @@ homepage: "https://www.henriksoderlund.com/"
 documentation: "https://github.com/henkisdabro/gtm-templates-fouanalytics"
 versions:
   # Latest version
+  - sha: 0e1e4db10f3d636e8084f1f1b849cdb456305f2b
+    changeNotes: |
+      Add cacheToken optimization, comprehensive unit tests, and improved documentation.
+      - Added cacheToken parameter to injectScript for script caching
+      - Added 7 unit tests covering all code paths
+      - Improved README with installation, configuration, and consent guidance
+  # Previous versions
   - sha: 83cf629fc2a4fe8a2d7c46f083f5804dc748142b
     changeNotes: Initial release.
-  # Previous versions

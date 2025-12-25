@@ -26,6 +26,8 @@ Thanks to Dr. Augustine Fou for building a great product. Read more about the se
    - Use the `api.fouanalytics.com` hostname
    - End with `init-[your-unique-id].js`
 
+   **Example:** `https://api.fouanalytics.com/v1/init-a1b2c3d4e5f6.js`
+
 2. **Log debug messages to console**: Enable this checkbox to see loading status messages in the browser console (useful for troubleshooting).
 
 ## Important Considerations
@@ -44,8 +46,27 @@ This template does not include built-in consent management. If you operate in re
 
 The responsibility for consent compliance lies with the template user, not the template itself.
 
+## Troubleshooting
+
+### Verify Installation
+Enable "Log debug messages to console" and check the browser DevTools Console. You should see:
+```
+FouAnalytics: Loading script from [your-url]
+FouAnalytics: Script loaded successfully.
+```
+
+### Common Issues
+
+| Message | Cause | Solution |
+|---------|-------|----------|
+| No console output | Debug mode disabled | Enable "Log debug messages to console" |
+| "Script load failed" | Network error or blocked | Check ad blockers, network connectivity |
+| "Script load failed due to permissions mismatch" | URL doesn't match template permissions | Verify URL uses `api.fouanalytics.com` hostname |
+| Tag shows as failed in GTM | Script injection error | Check URL format matches validation rules |
+
 ## Changelog
 
+- **v1.1**: Added cacheToken optimization, comprehensive unit tests, improved documentation
 - **v1**: Initial release
 
 ## License
