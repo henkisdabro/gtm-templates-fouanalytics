@@ -101,7 +101,7 @@ const onFailure = () => {
 // If the URL input by the user matches the permissions set for the template,
 // inject the script with the onSuccess and onFailure methods as callbacks.
 if (queryPermission('inject_script', url)) {
-  injectScript(url, onSuccess, onFailure);
+  injectScript(url, onSuccess, onFailure, url);
 } else {
   log('FouAnalytics: Script load failed due to permissions mismatch.');
   data.gtmOnFailure();
@@ -163,7 +163,136 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Script loads successfully
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: false
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onSuccess();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
+
+- name: Script fails to load
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: false
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onFailure();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('gtmOnFailure').wasCalled();
+    assertApi('gtmOnSuccess').wasNotCalled();
+
+- name: Permission denied triggers failure
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: false
+    };
+
+    mock('queryPermission', function(permission, url) {
+      return false;
+    });
+
+    runCode(mockData);
+    assertApi('gtmOnFailure').wasCalled();
+    assertApi('gtmOnSuccess').wasNotCalled();
+    assertApi('injectScript').wasNotCalled();
+
+- name: Debug mode logs messages on success
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: true
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onSuccess();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('logToConsole').wasCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Debug mode logs messages on failure
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: true
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onFailure();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('logToConsole').wasCalled();
+    assertApi('gtmOnFailure').wasCalled();
+
+- name: Debug mode disabled does not log
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: false
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      onSuccess();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('logToConsole').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: CacheToken is passed to injectScript
+  code: |-
+    const mockData = {
+      sourceUrl: 'https://api.fouanalytics.com/v1/init-abc123def456.js',
+      debug: false
+    };
+
+    mock('injectScript', function(url, onSuccess, onFailure, cacheToken) {
+      assertThat(cacheToken).isEqualTo(mockData.sourceUrl);
+      onSuccess();
+    });
+
+    mock('queryPermission', function(permission, url) {
+      return true;
+    });
+
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
 
 
 ___NOTES___
